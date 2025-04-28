@@ -18,7 +18,6 @@ public class Main extends Application {
 			stage.setTitle("DrawToSound");
 			stage.setScene(new Scene(root));
 			GUI_Controller controller = (GUI_Controller) loader.getController();
-			//stage.setOnCloseRequest(e -> controller.beendeTimer());
 			stage.show();
 			controller.setStage(stage);
 		} catch(Exception e) {
