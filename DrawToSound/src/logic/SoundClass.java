@@ -5,16 +5,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-
 import com.jsyn.JSyn;
-//import com.jsyn.JSyn;
 import com.jsyn.Synthesizer;
 import com.jsyn.devices.AudioDeviceFactory;
 import com.jsyn.unitgen.LineOut;
 import com.jsyn.unitgen.SawtoothOscillatorBL;
 import objects.CoordinateObject;  
-//import com.jsyn.JSyn;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.FloatControl;
@@ -27,22 +23,13 @@ public class SoundClass {
 	 
 	 private int LowerFrequencyLimit;
 	 private int UpperFrequencyLimit;
-	 
-	 private int frequency = 44100; //44100 sample points per 1 second
-	 
+	 private int frequency;
 	 private SourceDataLine sdl;
-	 
-	 
 	 private int DurationPerX;
-	 
 	 private List<byte[]> bufList;
-	 
 	 private int amountOfEntriesForBufList;
-	 
 	 private int muteFrequency;
-	 
 	 private int ClearFrequency;
-	 
 	 private boolean toggleContinousDraw;
 	 
 	 private Timer timer;
@@ -53,13 +40,10 @@ public class SoundClass {
 		 
 		 LowerFrequencyLimit = 200;
 		 UpperFrequencyLimit = 2000;
-		 
 		 DurationPerX = 25;		// alternatively 40
-		 
+		 frequency = 44100; //44100 sample points per 1 second
 		 muteFrequency = UpperFrequencyLimit + 5000;	
-		 
 		 ClearFrequency = 3;
-		 
 		 toggleContinousDraw = false;
 		 
 		 timer = new Timer();
@@ -110,10 +94,15 @@ public class SoundClass {
 			 TimerTask task = new TimerTask()
 			 {
 			         public void run()
-			         {
-			        	 System.out.println("toggleeee"); 
-			        	
+			         { 
+			        	 try {
+							startDataLine(CreateNewAudioFormat());
+						} catch (LineUnavailableException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 			        	 playCollectedSamples();
+			        	 resetDataLine();
 			         }
 
 			 };
@@ -150,27 +139,15 @@ public class SoundClass {
 			  double xCoordinate = CoordinateArray.get(i).getXCoordinate();
 			  double yCoordinate = CoordinateArray.get(i).getYCoordinate();
 			  
-			  //System.out.println("Coordinates of current coordinate object: x: " + xCoordinate + " y: " + yCoordinate);
-			  
 			  int cellCoordinate = (int) (xCoordinate / CellWidth);
 			  if (CoordinateArray.get(i).getIsSet()) {
 				 
-				  int DurationCounter = 0;
-				  
-				  for (int z = 0; z < CoordinateArray.size(); z++) {
-					  if (CoordinateArray.get(z).getXCoordinate() == xCoordinate) {
-						  	if (CoordinateArray.get(z).getIsSet()) {
-						  		DurationCounter++;
-						  	}
-					  } else if (CoordinateArray.get(z).getXCoordinate() > xCoordinate) {
-						  z = CoordinateArray.size();
-					  }
-				  }
+				  int numberOfSetEelementsForThisX = getNumberOfSetElementsForThisX(CoordinateArray, xCoordinate);
 				  
 				  int DurationForThisX = DurationPerX;
 				  
-				  if (DurationCounter >= 1) {
-					  DurationForThisX = (int) DurationPerX / DurationCounter;
+				  if (numberOfSetEelementsForThisX >= 1) {
+					  DurationForThisX = (int) DurationPerX / numberOfSetEelementsForThisX;
 				  }
 				  
 				  double frequencyForThisY; 
@@ -197,17 +174,32 @@ public class SoundClass {
 				  }
 				 
 				 
-				// System.out.println("reaches neg here for x: " + xCoordinate + "previous empty column x: " + previousEmptyColumnX);
-				//System.out.println("is empty column: " + isEmptyColumn + " " + xCoordinate);
-				 
 				 if (isEmptyColumn && xCoordinate > previousEmptyColumnX) {
-					 //addSampleToSampleArray(generateEmptySample(DurationPerX), cellCoordinate, amountOfSampleByteArraysPerDuration);
 					 bufList = addSampleToSampleArrayOld(generateEmptySample(DurationPerX), bufList, cellCoordinate, amountOfSampleByteArraysPerDuration);
 					 previousEmptyColumnX = xCoordinate;
 					 System.out.println("New empty sample added for: x: " + xCoordinate);
 				 }
 			 }
 		 }
+	 }
+	 
+	 
+	 
+	 private int getNumberOfSetElementsForThisX(Vector<CoordinateObject> CoordinateArray, double xOfCurrentElement) {
+		 
+		 int setElementCounter = 0;
+		 
+		 for (int z = 0; z < CoordinateArray.size(); z++) {
+			  if (CoordinateArray.get(z).getXCoordinate() == xOfCurrentElement) {
+				  	if (CoordinateArray.get(z).getIsSet()) {
+				  		setElementCounter++;
+				  	}
+			  } else if (CoordinateArray.get(z).getXCoordinate() > xOfCurrentElement) {
+				  z = CoordinateArray.size();
+			  }
+		  }
+		 
+		 return setElementCounter;
 	 }
 	 
 	 
@@ -318,8 +310,6 @@ public class SoundClass {
 	 private void playCollectedSamples () {
 		 for (int i = 0; i < bufList.size(); i++) {
 		        sdl.write(bufList.get(i), 0, 2);
-		       // sdl2.write(bufList2.get(i), 0, 2);
-		    	//System.out.println(bufList.get(i)[0] + bufList.get(i)[1]);
 		        
 		 }
 
@@ -331,7 +321,6 @@ public class SoundClass {
 		 for (int i = 0; i < amountOfEntriesForBufList; i++) {
 			 bufList.addAll(generateEmptySample(DurationPerX));
 		 }
-		// bufList2 = new ArrayList<>();
 	 }
 	  
 	 
