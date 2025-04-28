@@ -5,16 +5,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-
 import com.jsyn.JSyn;
-//import com.jsyn.JSyn;
 import com.jsyn.Synthesizer;
 import com.jsyn.devices.AudioDeviceFactory;
 import com.jsyn.unitgen.LineOut;
 import com.jsyn.unitgen.SawtoothOscillatorBL;
 import objects.CoordinateObject;  
-//import com.jsyn.JSyn;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.FloatControl;
@@ -27,39 +23,28 @@ public class SoundClass {
 	 
 	 private int LowerFrequencyLimit;
 	 private int UpperFrequencyLimit;
-	 
-	 private int frequency = 44100; //44100 sample points per 1 second
+	 private int frequency;
 	 
 	 private SourceDataLine sdl;
-	 
-	 
 	 private int DurationPerX;
-	 
 	 private List<byte[]> bufList;
 	 
 	 private int amountOfEntriesForBufList;
-	 
 	 private int muteFrequency;
-	 
 	 private int ClearFrequency;
-	 
 	 private boolean toggleContinousDraw;
-	 
 	 private Timer timer;
 	 
 	 
 	 
 	 public SoundClass () {
-		 
+
+		 frequency = 44100; //44100 sample points per 1 second
 		 LowerFrequencyLimit = 200;
 		 UpperFrequencyLimit = 2000;
-		 
 		 DurationPerX = 25;		// alternatively 40
-		 
 		 muteFrequency = UpperFrequencyLimit + 5000;	
-		 
 		 ClearFrequency = 3;
-		 
 		 toggleContinousDraw = false;
 		 
 		 timer = new Timer();
@@ -149,8 +134,6 @@ public class SoundClass {
 		 for (int i = 0; i < CoordinateArray.size(); i++) {
 			  double xCoordinate = CoordinateArray.get(i).getXCoordinate();
 			  double yCoordinate = CoordinateArray.get(i).getYCoordinate();
-			  
-			  //System.out.println("Coordinates of current coordinate object: x: " + xCoordinate + " y: " + yCoordinate);
 			  
 			  int cellCoordinate = (int) (xCoordinate / CellWidth);
 			  if (CoordinateArray.get(i).getIsSet()) {
