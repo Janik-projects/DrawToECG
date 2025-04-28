@@ -24,6 +24,10 @@ public class SoundClass {
 	 private int LowerFrequencyLimit;
 	 private int UpperFrequencyLimit;
 	 private int frequency;
+<<<<<<< HEAD
+=======
+	 
+>>>>>>> 3978270974e8f600187dec234d2b973284c1c13d
 	 private SourceDataLine sdl;
 	 private int DurationPerX;
 	 private List<byte[]> bufList;
@@ -31,17 +35,20 @@ public class SoundClass {
 	 private int muteFrequency;
 	 private int ClearFrequency;
 	 private boolean toggleContinousDraw;
-	 
 	 private Timer timer;
 	 
 	 
 	 
 	 public SoundClass () {
-		 
+
+		 frequency = 44100; //44100 sample points per 1 second
 		 LowerFrequencyLimit = 200;
 		 UpperFrequencyLimit = 2000;
 		 DurationPerX = 25;		// alternatively 40
+<<<<<<< HEAD
 		 frequency = 44100; //44100 sample points per 1 second
+=======
+>>>>>>> 3978270974e8f600187dec234d2b973284c1c13d
 		 muteFrequency = UpperFrequencyLimit + 5000;	
 		 ClearFrequency = 3;
 		 toggleContinousDraw = false;

@@ -1,11 +1,9 @@
-    package application;
+package application;
 
 
 import java.util.EventListener;
 import java.util.Vector;
-
 import javax.sound.sampled.LineUnavailableException;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -22,15 +20,12 @@ import objects.CoordinateObject;
 import logic.SoundClass;
 import javafx.scene.control.ToggleButton;
 
+
+
 public class GUI_Controller {
 
-   
     private Stage mainStage;
-    
     private SoundClass SoundProcessor;
-    
-    //private SoundClassImproved SoundProcessor;
-    
     private int CellWidth;
     private int CellHeight;
     
@@ -48,7 +43,6 @@ public class GUI_Controller {
     	DrawingCanvas.getGraphicsContext2D().setFill(Color.BLACK);
     	
     	SoundProcessor = new SoundClass();
-    	//SoundProcessor = new SoundClassImproved();
     	
     }
     
@@ -99,13 +93,6 @@ public class GUI_Controller {
     		}
     	} 
     	
-    	/*
-    	for (int y = 0; y <= CanvasHeight; y += CellHeight) {
-   		 for (int x = 0; x <= CanvasWidth; x += CellWidth) {
-   			CoordinateArray.add(new CoordinateObject(x, y, false, ID));
-   			ID++;
-   		} 
-   	}*/
     }
  
     
@@ -215,12 +202,7 @@ public class GUI_Controller {
     	double CanvasOffsetX = DrawingCanvas.getLayoutX();
     	double CanvasOffsetY = DrawingCanvas.getLayoutY();
     	
-    	//double CanvasOffsetX = DrawingCanvas.getScene().getX();
-    	//double CanvasOffsetY = DrawingCanvas.getScene().getY();
-    	
-    	
     	GraphicsContext CanvasGraphics = DrawingCanvas.getGraphicsContext2D();
-    	
     	
     	double ActualCanvasX = DragX-CanvasOffsetX;
     	double ActualCanvasY = DragY-CanvasOffsetY;
