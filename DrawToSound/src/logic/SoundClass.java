@@ -41,7 +41,6 @@ public class SoundClass {
 		 LowerFrequencyLimit = 200;
 		 UpperFrequencyLimit = 2000;
 		 DurationPerX = 25;		// alternatively 40
-		 frequency = 44100; //44100 sample points per 1 second
 		 muteFrequency = UpperFrequencyLimit + 5000;	
 		 ClearFrequency = 3;
 		 toggleContinousDraw = false;
