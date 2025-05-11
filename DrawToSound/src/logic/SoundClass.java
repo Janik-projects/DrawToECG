@@ -24,10 +24,6 @@ public class SoundClass {
 	 private int LowerFrequencyLimit;
 	 private int UpperFrequencyLimit;
 	 private int frequency;
-<<<<<<< HEAD
-=======
-	 
->>>>>>> 3978270974e8f600187dec234d2b973284c1c13d
 	 private SourceDataLine sdl;
 	 private int DurationPerX;
 	 private List<byte[]> bufList;
@@ -35,28 +31,43 @@ public class SoundClass {
 	 private int muteFrequency;
 	 private int ClearFrequency;
 	 private boolean toggleContinousDraw;
+	 private boolean toggleClockMode; 
+	 private int clockModeTimerDuration;
+	 private int continuousTimerDuration;
+	 
 	 private Timer timer;
 	 
 	 
 	 
 	 public SoundClass () {
-
-		 frequency = 44100; //44100 sample points per 1 second
+		 
 		 LowerFrequencyLimit = 200;
 		 UpperFrequencyLimit = 2000;
 		 DurationPerX = 25;		// alternatively 40
-<<<<<<< HEAD
 		 frequency = 44100; //44100 sample points per 1 second
-=======
->>>>>>> 3978270974e8f600187dec234d2b973284c1c13d
 		 muteFrequency = UpperFrequencyLimit + 5000;	
 		 ClearFrequency = 3;
 		 toggleContinousDraw = false;
+		 toggleClockMode = false; 
+		 clockModeTimerDuration = 1700;
+		 continuousTimerDuration = 3000;
 		 
 		 timer = new Timer();
 		 
 	 }
+	 
+	 
+	 
+	 public boolean getToggleClockMode () {
+		 return toggleClockMode;
+	 }
 	
+	 
+	 
+	 public void setToggleClockMode (boolean newToggleClockMode) { 
+		 toggleClockMode = newToggleClockMode;
+	 }
+	 
 	 
 	 
 	 private AudioFormat CreateNewAudioFormat () {
@@ -67,13 +78,51 @@ public class SoundClass {
 	 
 	 
 	 
-	 public void DrawAsAudio (Vector<CoordinateObject> givenCoordinateArray, double CanvasHeight, double CellHeight, double CanvasWidth, double CellWidth) throws LineUnavailableException {
+	 public void HandleClockMode (Vector<CoordinateObject> givenCoordinateArray, double CanvasHeight, double CellHeight, double CanvasWidth, double CellWidth) throws LineUnavailableException {
 		 
-		 startDataLine(CreateNewAudioFormat());
+		 //startDataLine(CreateNewAudioFormat());
+		 
+		 resetSampleArray();
+		 DrawToSampleArray(givenCoordinateArray, CanvasHeight, CellHeight, CanvasWidth, CellWidth);
+		 
+		 if (toggleClockMode == false) {
+			 resetDataLine();
+			 timer.cancel();
+			 timer.purge();
+		 } else {
+			 
+			 TimerTask task = new TimerTask()
+			 {
+			         public void run()
+			         { 
+			        	 
+			        	 try {
+			        		resetSampleArray();
+				    		DrawToSampleArray(givenCoordinateArray, CanvasHeight, CellHeight, CanvasWidth, CellWidth);
+							startDataLine(CreateNewAudioFormat());
+						} catch (LineUnavailableException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			        	 playCollectedSamples();
+			        	 resetDataLine();
+			         }
+
+			 };
+			 timer = new Timer();
+			 timer.scheduleAtFixedRate(task, 0, clockModeTimerDuration);
+		 }
+	 }
+	 
+	 
+	 
+	 public void DrawAsAudio (Vector<CoordinateObject> givenCoordinateArray, double CanvasHeight, double CellHeight, double CanvasWidth, double CellWidth) throws LineUnavailableException {
 		 
 		 resetSampleArray();
 		 
 		 DrawToSampleArray(givenCoordinateArray, CanvasHeight, CellHeight, CanvasWidth, CellWidth);
+		 
+		 startDataLine(CreateNewAudioFormat());
 		 
 		 playCollectedSamples();
 		  
@@ -82,7 +131,7 @@ public class SoundClass {
 	 
 	 
 	 
-	 public void DrawContinously (Vector<CoordinateObject> givenCoordinateArray, double CanvasHeight, double CellHeight, double CanvasWidth, double CellWidth) throws LineUnavailableException {
+	 public void DrawContinuously (Vector<CoordinateObject> givenCoordinateArray, double CanvasHeight, double CellHeight, double CanvasWidth, double CellWidth) throws LineUnavailableException {
 		
 		startDataLine(CreateNewAudioFormat());
 
@@ -114,7 +163,7 @@ public class SoundClass {
 
 			 };
 			 timer = new Timer();
-			 timer.scheduleAtFixedRate(task, 0, 3000);
+			 timer.scheduleAtFixedRate(task, 0, continuousTimerDuration);
 		 }
 		
 	 }
@@ -137,6 +186,7 @@ public class SoundClass {
 		 
 		 CoordinateArray = removeUnnecessaryVerticalSets(CoordinateArray);
 		 
+		 boolean isPastFirstSet = false;
 		 
 		 double previousEmptyColumnX = -1;
 		 
@@ -148,6 +198,8 @@ public class SoundClass {
 			  
 			  int cellCoordinate = (int) (xCoordinate / CellWidth);
 			  if (CoordinateArray.get(i).getIsSet()) {
+				  
+				  isPastFirstSet = true;
 				 
 				  int numberOfSetEelementsForThisX = getNumberOfSetElementsForThisX(CoordinateArray, xCoordinate);
 				  
@@ -169,22 +221,26 @@ public class SoundClass {
 			  } else {
 				 
 				  boolean isEmptyColumn = true;
+				  
+				  if (isPastFirstSet) {
 				 
-				  if (xCoordinate > previousEmptyColumnX) {
-					  for (int y = 0; y < CoordinateArray.size(); y++) {
+					  if (xCoordinate > previousEmptyColumnX) {
+						  for (int y = 0; y < CoordinateArray.size(); y++) {
 						 
-						  if (CoordinateArray.get(y).getIsSet() && CoordinateArray.get(y).getXCoordinate() == xCoordinate) {
-							  isEmptyColumn = false;
+							  if (CoordinateArray.get(y).getIsSet() && CoordinateArray.get(y).getXCoordinate() == xCoordinate) {
+								  isEmptyColumn = false;
+							  }
+						 
 						  }
-						 
+					  }
+				 
+				 
+				 
+					  if (isEmptyColumn && xCoordinate > previousEmptyColumnX) {
+						  bufList = addSampleToSampleArrayOld(generateEmptySample(DurationPerX), bufList, cellCoordinate, amountOfSampleByteArraysPerDuration);
+						  previousEmptyColumnX = xCoordinate;
+						  System.out.println("New empty sample added for: x: " + xCoordinate);
 					  } 
-				  }
-				 
-				 
-				 if (isEmptyColumn && xCoordinate > previousEmptyColumnX) {
-					 bufList = addSampleToSampleArrayOld(generateEmptySample(DurationPerX), bufList, cellCoordinate, amountOfSampleByteArraysPerDuration);
-					 previousEmptyColumnX = xCoordinate;
-					 System.out.println("New empty sample added for: x: " + xCoordinate);
 				 }
 			 }
 		 }
@@ -325,9 +381,9 @@ public class SoundClass {
 	 private void resetSampleArray () throws LineUnavailableException {
 		 bufList = new ArrayList<>();
 		 
-		 for (int i = 0; i < amountOfEntriesForBufList; i++) {
+		 /*for (int i = 0; i < amountOfEntriesForBufList; i++) {
 			 bufList.addAll(generateEmptySample(DurationPerX));
-		 }
+		 }*/
 	 }
 	  
 	 
