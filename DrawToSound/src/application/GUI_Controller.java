@@ -587,27 +587,7 @@ public class GUI_Controller {
     		}
     	}
     }
-    
-    
-    
-    private void drawExternalImageIntoCoordinateArray (BufferedImage imageToDraw, double xCoordinate, double yCoordinate, int scale) {
-    	
-    	for (int x = 0; x < imageToDraw.getWidth(); x++) {
-    		for (int y = 0; y < imageToDraw.getHeight(); y++) {
-    			if (isPixelOfImageAtCoordinatesSet(imageToDraw, x, y)) {
-    				for (int i = 1; i <= scale; i++) {
-    					double calculatedX = (xCoordinate + (x * CellWidth));
-    					double calculatedY = (yCoordinate + (y * CellHeight));
-    				
-    					getCoordinateObjectByXAndY(calculatedX, calculatedY).setIsSet(true);
-    				
-    					System.out.println("Coordinates Set in array at: " + calculatedX + " " + calculatedY);
-    				}
-    			}
-    		}
-    	}
-    }
-    
+
     
     
     private boolean isPixelOfImageAtCoordinatesSet (BufferedImage imageToCheck, int xImageCoordinate, int yImageCoordinate) {
